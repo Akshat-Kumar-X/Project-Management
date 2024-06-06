@@ -1,0 +1,63 @@
+<h2>Project Access Management</h2>
+<div>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Project Number</th>
+        <th>Project Name</th>
+        <th>Designer Names</th>
+        <th>Access Rights</th>
+      </tr>
+    </thead>
+    <tbody id="projectAccessData"></tbody>
+  </table>
+</div>
+<script>
+    function populateProjectAccessTable() {
+        var projects = window.projects;
+        var tableBody = document.getElementById("projectAccessData");
+        tableBody.innerHTML = ""; 
+
+        projects.forEach(function(project) {
+            var row = document.createElement("tr");
+            var projectNumberCell = document.createElement("td");
+            projectNumberCell.textContent = project.projectNumber;
+            var projectNameCell = document.createElement("td");
+            projectNameCell.textContent = project.projectName;
+            var designerNameCell = document.createElement("td");
+            designerNameCell.textContent = project.designerNames.join(", ");
+            var accessRightsCell = document.createElement("td");
+
+            project.accessRights = project.accessRights || [];
+
+            project.designerNames.forEach(function(designer) {
+                var accessCheckbox = document.createElement("input");
+                accessCheckbox.type = "checkbox";
+                accessCheckbox.value = designer;
+                accessCheckbox.classList = "ml-3"
+                accessCheckbox.name = project.projectNumber + "-" + designer; 
+                accessCheckbox.checked = project.accessRights.includes(designer); 
+                var checkboxState = localStorage.getItem(project.projectNumber + "-" + designer);
+                if (checkboxState !== null) {
+                    accessCheckbox.checked = checkboxState === "true";
+                }
+
+                accessCheckbox.addEventListener("change", function() {
+                    localStorage.setItem(project.projectNumber + "-" + designer, this.checked);
+                });
+
+                accessRightsCell.appendChild(accessCheckbox);
+                accessRightsCell.appendChild(document.createTextNode(" " + designer + " "));
+            });
+
+            row.appendChild(projectNumberCell);
+            row.appendChild(projectNameCell);
+            row.appendChild(designerNameCell);
+            row.appendChild(accessRightsCell);
+
+            tableBody.appendChild(row);
+        });
+    }
+
+    populateProjectAccessTable();
+</script>

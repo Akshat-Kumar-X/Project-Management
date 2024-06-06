@@ -1,0 +1,93 @@
+<h2>Project Info</h2>
+<div>
+    <div class="d-flex mb-4">
+        <label for="projectNumber">Project Number:</label>
+        <select id="projectNumber" class="ml-3 form-control w-25"></select>
+    </div>
+
+    <div id="projectInfoContent">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Designer Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="designerList"></tbody>
+        </table>
+
+        <div class="d-flex mt-3">
+            <input type="text" id="newDesignerInput" class="form-control w-25" placeholder="Enter Designer Name">
+            <button id="addDesignerButton" class="btn btn-sm btn-primary ml-2">Add Designer</button>
+        </div>
+    </div>
+</div>
+<script>
+    function loadProjectData(projectNumber) {
+        var selectedProject = window.projects.find(function (project) {
+            return project.projectNumber == projectNumber;
+        });
+        if (selectedProject) {
+            var designerList = document.getElementById("designerList");
+            designerList.innerHTML = ""; 
+
+            selectedProject.designerNames.forEach(function (name, index) {
+                var row = document.createElement("tr");
+
+                var designerNameCell = document.createElement("td");
+                designerNameCell.textContent = name;
+
+                var actionsCell = document.createElement("td");
+                var removeButton = document.createElement("button");
+                removeButton.textContent = "Remove";
+                removeButton.classList.add("btn", "btn-sm", "btn-danger", "remove-designer");
+                removeButton.dataset.designerIndex = index;
+
+                removeButton.addEventListener("click", function () {
+                    var designerIndex = parseInt(this.dataset.designerIndex);
+                    selectedProject.designerNames.splice(designerIndex, 1);
+                    loadProjectData(projectNumber);
+                });
+
+                actionsCell.appendChild(removeButton);
+
+                row.appendChild(designerNameCell);
+                row.appendChild(actionsCell);
+
+                designerList.appendChild(row);
+            });
+
+            var addButton = document.getElementById("addDesignerButton");
+            addButton.addEventListener("click", function () {
+                var newDesignerInput = document.getElementById("newDesignerInput");
+                var newDesignerName = newDesignerInput.value;
+                if (newDesignerName) {
+                    selectedProject.designerNames.push(newDesignerName);
+                    loadProjectData(projectNumber);
+                    newDesignerInput.value = "";
+                }
+            });
+        } else {
+            document.getElementById("designerList").innerHTML = "<tr><td colspan='2'>No data available for the selected project.</td></tr>";
+        }
+    }
+
+    var projectNumbers = window.projects.map(function (project) {
+        return project.projectNumber;
+    });
+
+    var selectBox = document.getElementById("projectNumber");
+    projectNumbers.forEach(function (number) {
+        var option = document.createElement("option");
+        option.text = number;
+        option.value = number;
+        selectBox.add(option);
+    });
+
+    loadProjectData(projectNumbers[0]);
+
+    selectBox.addEventListener("change", function () {
+        var selectedProjectNumber = selectBox.value;
+        loadProjectData(selectedProjectNumber);
+    });
+</script>

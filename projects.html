@@ -1,0 +1,21 @@
+<h2>Projects</h2>
+<div id="projectsContent">
+</div>
+<script>
+    var projects = window.projects;
+
+    if (projects && projects.length > 0) {
+        var table = "<table class='table'><thead><tr><th>Project Number</th><th>Project Name</th><th>Designer Names</th></tr></thead><tbody>";
+        
+        for (var i = 0; i < projects.length; i++) {
+            var designerNames = projects[i].designerNames.join(", ");
+            table += "<tr><td>" + projects[i].projectNumber + "</td><td>" + projects[i].projectName + "</td><td>" + designerNames + "</td></tr>";
+        }
+        
+        table += "</tbody></table>";
+        
+        document.getElementById("projectsContent").innerHTML = table;
+    } else {
+        document.getElementById("projectsContent").innerHTML = "<p>No projects found.</p>";
+    }
+</script>
